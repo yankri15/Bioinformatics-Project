@@ -1,5 +1,7 @@
 # Final biology submission
 
+`pip install -r requirements.txt`
+
 run part b: `python partb.py`
 
 <https://www.uniprot.org/>
