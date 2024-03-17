@@ -1,3 +1,7 @@
+# Final biology submission
+
+run part b: `python partb.py`
+
 <https://www.uniprot.org/>
 
 ## part a
