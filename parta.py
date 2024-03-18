@@ -1,20 +1,29 @@
-from Bio import SeqIO
+from template import *
 
-genbank_data = [rec for rec in SeqIO.parse("Bacillus clausii.gb", "genbank")]
+BC_FILE_PATH = os.path.join(DATA_PATH, 'Bacillus clausii.gb')
 
-# count feature.type
-# 1 get all feature types
-feature_type = [feature.type for record in genbank_data for feature in record.features]
-feature_type_count = {i: feature_type.count(i) for i in feature_type}
-print(feature_type_count)
-# {'source': 1, 'gene': 4203, 'CDS': 4108, 'rRNA': 22, 'tRNA': 73, 'misc_feature': 27}
+class BacillusClausiiGB:
+    def __init__(self, gb_path, id_header="locus_tag"):
+        dataframe, sequence, gene_names = parse_genbank_to_dataframe(gb_path, id_header)
+        self.dataframe = dataframe
+        self.sequence = sequence
+        self.gene_names = gene_names
+        self.cds = None
+        self.other = None
+
+    def print_dictionary(self):
+        """
+        Prints a summary of element types including genes and other types from the DataFrame.
+        """
+        elements_summary = {'gene': len(self.gene_names), **self.dataframe['type'].value_counts().to_dict()}
+
+        print("Elements Summary:")
+        for element_type, count in elements_summary.items():
+            print(f"{element_type}: {count}")
 
 
-# 2.a genes length
-gene_length = [
-    len(feature)
-    for record in genbank_data
-    for feature in record.features
-    if feature.type == "gene"
-]
-print(f"Total number of genes: {len(gene_length)}")
+
+if __name__ == "__main__":
+    genbank = BacillusClausiiGB(BC_FILE_PATH)
+
+    genbank.print_dictionary()
