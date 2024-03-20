@@ -192,20 +192,19 @@ def get_stats_table(array, title):
     
     return stats_df
     
-def plot_histograma(title, total_len, x_label, y_label, x_max=None, y_max=None, color='skyblue'):
+def plot_single_histograma(title, total_len, x_label, y_label, x_max=None, y_max=None, color='skyblue'):
     """
     Plots a histogram with customization options for the title, labels, axis limits, and color.
 
     Parameters:
     - title (str): Title of the histogram.
-    - arr (array-like): Data array for the histogram.
+    - total_len (array-like): Data array for the histogram.
     - x_label (str): Label for the X-axis.
     - y_label (str): Label for the Y-axis.
     - x_max (float, optional): Maximum limit for the X-axis. If None, the limit is determined automatically.
     - y_max (float, optional): Maximum limit for the Y-axis. If None, the limit is determined automatically.
     - color (str, optional): Color of the histogram bars. Defaults to 'skyblue'.
     """
-    # Handle empty array input gracefully
     if not len(total_len):
         print("The array is empty. No histogram will be plotted.")
         return
@@ -216,10 +215,41 @@ def plot_histograma(title, total_len, x_label, y_label, x_max=None, y_max=None, 
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
 
-    # Set axis limits if specified
     if x_max is not None:
         ax.set_xlim([0, x_max])
     if y_max is not None:
         ax.set_ylim([0, y_max])
 
     plt.show()
+
+    jpeg_file_path = os.path.join(DATA_PATH, f"{title.replace(' ', '_')}.jpeg")
+    fig.savefig(jpeg_file_path, format='jpeg')
+    print(f"Histogram saved as JPEG at {jpeg_file_path}")
+
+def plot_multiple_histograma(title, lengths, x_label, y_label, color='skyblue', ax=None):
+    """
+    Plots a histogram with customization options for the title, labels, and color.
+    The axis object is passed to allow for subplotting.
+
+    Parameters:
+    - title (str): Title of the histogram.
+    - lengths (array-like): Data array for the histogram.
+    - x_label (str): Label for the X-axis.
+    - y_label (str): Label for the Y-axis.
+    - color (str, optional): Color of the histogram bars. Defaults to 'skyblue'.
+    - ax (matplotlib.axes.Axes, optional): Matplotlib axis object for plotting.
+    """
+    if not len(lengths):
+        print("The array is empty. No histogram will be plotted.")
+        return
+
+    if ax is None:
+        fig, ax = plt.subplots()
+
+    ax.hist(lengths, color=color)
+    ax.set_title(title)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel(y_label)
+
+    return ax
+
