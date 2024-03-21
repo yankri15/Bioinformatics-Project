@@ -25,10 +25,60 @@ for codon, aa in codons.items():
 
 print(aa_codons)
 
-synonimous_codons = {}
+synonimous_codons_first_char = {}
+synonimous_codons_second_char = {}
+synonimous_codons_third_char = {}
 
 for key, strings in aa_codons.items():
-    for string in strings:
-        if key not in synonimous_codons:
-            synonimous_codons[key] = []
-        synonimous_codons[key].append(string)
+    # remove first char from each string
+    strings_minus_first_char = [x[1:] for x in strings]
+    strings_minus_second_char = [x[0] + x[2] for x in strings]
+    strings_minus_third_char = [x[:2] for x in strings]
+
+    # check if cell have duplicates in the list
+    duplicates_first_char = [
+        x for x in strings_minus_first_char if strings_minus_first_char.count(x) > 1
+    ]
+    synonimous_codons_first_char[key] = duplicates_first_char
+
+    duplicates_second_char = [
+        x for x in strings_minus_second_char if strings_minus_second_char.count(x) > 1
+    ]
+    synonimous_codons_second_char[key] = duplicates_second_char
+
+    duplicates_third_char = [
+        x for x in strings_minus_third_char if strings_minus_third_char.count(x) > 1
+    ]
+    synonimous_codons_third_char[key] = duplicates_third_char
+
+
+print("==========")
+for key, value in synonimous_codons_first_char.items():
+    print(key, value)
+print("=====2nd=====")
+for key, value in synonimous_codons_second_char.items():
+    print(key, value)
+
+print("=====3rd=====")
+
+for key, value in synonimous_codons_third_char.items():
+    print(key, value)
+
+count_first_char = 0
+count_second_char = 0
+count_third_char = 0
+
+for key, value in synonimous_codons_first_char.items():
+    count_first_char += sum([value.count(x) - 1 for x in value])
+
+for key, value in synonimous_codons_second_char.items():
+    count_second_char += sum([value.count(x) - 1 for x in value])
+
+for key, value in synonimous_codons_third_char.items():
+    count_third_char += sum([value.count(x) - 1 for x in value])
+
+print(count_first_char)
+print(count_second_char)
+print(count_third_char)
+total = count_first_char + count_second_char + count_third_char
+print(total)
