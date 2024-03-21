@@ -1,0 +1,20 @@
+א
+==========
+אורכי הגנים:
+April 2021 covid genome length: 29740
+Feb 2024 covid genome length: 29661
+
+ב
+=============
+כמה גנים יש בכל אחד, כמה מתוכם מקודד לחלבונים
+April 2021 covid number of genes: 11
+Feb 2024 covid number of genes: 11
+
+April 2021 covid number of proteins: 12
+Feb 2024 covid number of proteins: 12
+
+כאשר סופרים feature.type == 'gene'
+וגם feature.type == 'CDS' 
+
+כאשר מבצעים את השאילתות בנפרד, מקבלים יותר חלבונים מגנים, התסכלנו בקובץ וראינו שיש גן אחד שיש לו 2 חלבונים
+

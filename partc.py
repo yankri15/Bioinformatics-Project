@@ -90,7 +90,9 @@ print(total)
 april_2021_covid_file_path = "./Data/MZ054892.gb"
 feb_2024_covid_file_path = "./Data/PP348372.gb"
 try:
-    gb_record = SeqIO.read(april_2021_covid_file_path, "genbank")
+    april_2021_covid_gb_record = SeqIO.read(april_2021_covid_file_path, "genbank")
+    print(f"File exists: {april_2021_covid_file_path}")
+
 except FileNotFoundError:
     Entrez.email = "kobieshka@gmail.com"
     with Entrez.efetch(
@@ -99,10 +101,11 @@ except FileNotFoundError:
         with open(april_2021_covid_file_path, "w") as out_handle:
             out_handle.write(in_handle.read())
         print(f"Saved file {april_2021_covid_file_path}")
-    gb_record = SeqIO.read(april_2021_covid_file_path, "genbank")
+    april_2021_covid_gb_record = SeqIO.read(april_2021_covid_file_path, "genbank")
 
 try:
-    gb_record = SeqIO.read(feb_2024_covid_file_path, "genbank")
+    feb_2024_covid_gb_record = SeqIO.read(feb_2024_covid_file_path, "genbank")
+    print(f"File exists: {feb_2024_covid_file_path}")
 except FileNotFoundError:
     Entrez.email = "kobieshka@gmail.com"
     with Entrez.efetch(
@@ -111,4 +114,39 @@ except FileNotFoundError:
         with open(feb_2024_covid_file_path, "w") as out_handle:
             out_handle.write(in_handle.read())
         print(f"Saved file {feb_2024_covid_file_path}")
-    gb_record = SeqIO.read(feb_2024_covid_file_path, "genbank")
+    feb_2024_covid_gb_record = SeqIO.read(feb_2024_covid_file_path, "genbank")
+
+# a. genome length
+april_2021_covid_genome_length = len(april_2021_covid_gb_record.seq)
+print(f"April 2021 covid genome length: {april_2021_covid_genome_length}")
+
+feb_2024_covid_genome_length = len(feb_2024_covid_gb_record.seq)
+print(f"Feb 2024 covid genome length: {feb_2024_covid_genome_length}")
+
+
+# b. number of genes
+april_2021_num_of_genes = 0
+for feature in april_2021_covid_gb_record.features:
+    if feature.type == "gene":
+        april_2021_num_of_genes += 1
+print(f"April 2021 covid number of genes: {april_2021_num_of_genes}")
+
+feb_2024_num_of_genes = 0
+for feature in feb_2024_covid_gb_record.features:
+    if feature.type == "gene":
+        feb_2024_num_of_genes += 1
+
+print(f"Feb 2024 covid number of genes: {feb_2024_num_of_genes}")
+
+# c. number of proteins
+april_2021_num_of_proteins = 0
+for feature in april_2021_covid_gb_record.features:
+    if feature.type == "CDS":
+        april_2021_num_of_proteins += 1
+print(f"April 2021 covid number of proteins: {april_2021_num_of_proteins}")
+
+feb_2024_num_of_proteins = 0
+for feature in feb_2024_covid_gb_record.features:
+    if feature.type == "CDS":
+        feb_2024_num_of_proteins += 1
+print(f"Feb 2024 covid number of proteins: {feb_2024_num_of_proteins}")
