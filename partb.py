@@ -10,7 +10,7 @@ hydrophopic_amino_acids = ["A", "F", "I", "L", "M", "P", "V", "W"]
 
 uniprot_data = pd.read_csv("./Data/uniprotkb_Bacillus_clausii_2024_03_16.tsv", sep="\t")
 
-genbank_data = [rec for rec in SeqIO.parse("Bacillus clausii.gb", "genbank")]
+genbank_data = [rec for rec in SeqIO.parse("./Data/Bacillus clausii.gb", "genbank")]
 
 
 # get locus_tags from genbank file
