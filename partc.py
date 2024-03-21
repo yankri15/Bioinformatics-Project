@@ -1,10 +1,8 @@
-from Bio import Entrez, SeqIO
+from Bio import Entrez, SeqIO, codonalign
 import pandas as pd
 import matplotlib.pyplot as plt
 import Bio.Data.CodonTable
 import seaborn as sns
-
-# 1. בחלק ג' בפרויקט הסופי אפשר להשתמש בפונקציה המובנת עבור החישוב של dnds.
 
 
 # 1. Get the standard_dna_table
@@ -125,18 +123,20 @@ print(f"Feb 2024 covid genome length: {feb_2024_covid_genome_length}")
 
 
 # b. number of genes
-april_2021_num_of_genes = 0
+april_2021_genes = set()
+
 for feature in april_2021_covid_gb_record.features:
     if feature.type == "gene":
-        april_2021_num_of_genes += 1
-print(f"April 2021 covid number of genes: {april_2021_num_of_genes}")
+        april_2021_genes.add(feature.qualifiers["gene"][0])
 
-feb_2024_num_of_genes = 0
+print(f"April 2021 covid number of genes: {len(april_2021_genes)}")
+
+feb_2024_genes = set()
 for feature in feb_2024_covid_gb_record.features:
     if feature.type == "gene":
-        feb_2024_num_of_genes += 1
+        feb_2024_genes.add(feature.qualifiers["gene"][0])
 
-print(f"Feb 2024 covid number of genes: {feb_2024_num_of_genes}")
+print(f"Feb 2024 covid number of genes: {len(feb_2024_genes)}")
 
 # c. number of proteins
 april_2021_num_of_proteins = 0
@@ -150,3 +150,38 @@ for feature in feb_2024_covid_gb_record.features:
     if feature.type == "CDS":
         feb_2024_num_of_proteins += 1
 print(f"Feb 2024 covid number of proteins: {feb_2024_num_of_proteins}")
+
+# d. shared genes
+print(april_2021_genes)
+print(feb_2024_genes)
+
+shared_genes = april_2021_genes.intersection(feb_2024_genes)
+print(f"Shared genes: {shared_genes}")
+
+
+def some_other_intersting():
+    # get translations
+    april_2021_translations = []
+    for feature in april_2021_covid_gb_record.features:
+        if feature.type == "CDS":
+            april_2021_translations.append(feature.qualifiers["translation"][0])
+
+    feb_2024_translations = []
+    for feature in feb_2024_covid_gb_record.features:
+        if feature.type == "CDS":
+            feb_2024_translations.append(feature.qualifiers["translation"][0])
+
+    # april_2021_translations md5
+    april_2021_translations_md5 = []
+    for translation in april_2021_translations:
+        april_2021_translations_md5.append(hash(translation))
+
+    feb_2024_translations_md5 = []
+    for translation in feb_2024_translations:
+        feb_2024_translations_md5.append(hash(translation))
+
+    # print(april_2021_translations_md5)
+    # print(feb_2024_translations_md5)
+
+
+# dnds
