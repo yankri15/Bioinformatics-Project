@@ -1,4 +1,4 @@
-from Bio import SeqIO
+from Bio import Entrez, SeqIO
 import pandas as pd
 import matplotlib.pyplot as plt
 import Bio.Data.CodonTable
@@ -82,3 +82,33 @@ print(count_second_char)
 print(count_third_char)
 total = count_first_char + count_second_char + count_third_char
 print(total)
+
+
+# שאלה 2
+# if file is not found, download it from genbank
+# if file is found, read it from the file
+april_2021_covid_file_path = "./Data/MZ054892.gb"
+feb_2024_covid_file_path = "./Data/PP348372.gb"
+try:
+    gb_record = SeqIO.read(april_2021_covid_file_path, "genbank")
+except FileNotFoundError:
+    Entrez.email = "kobieshka@gmail.com"
+    with Entrez.efetch(
+        db="nucleotide", id="MZ054892.1", rettype="gb", retmode="text"
+    ) as in_handle:
+        with open(april_2021_covid_file_path, "w") as out_handle:
+            out_handle.write(in_handle.read())
+        print(f"Saved file {april_2021_covid_file_path}")
+    gb_record = SeqIO.read(april_2021_covid_file_path, "genbank")
+
+try:
+    gb_record = SeqIO.read(feb_2024_covid_file_path, "genbank")
+except FileNotFoundError:
+    Entrez.email = "kobieshka@gmail.com"
+    with Entrez.efetch(
+        db="nucleotide", id="PP348372.1", rettype="gb", retmode="text"
+    ) as in_handle:
+        with open(feb_2024_covid_file_path, "w") as out_handle:
+            out_handle.write(in_handle.read())
+        print(f"Saved file {feb_2024_covid_file_path}")
+    gb_record = SeqIO.read(feb_2024_covid_file_path, "genbank")
