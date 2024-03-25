@@ -6,7 +6,7 @@ class BacillusClausiiGB:
     def __init__(self, gb_path, id_header="locus_tag"):
         dataframe, sequence, gene_names = parse_genbank_to_dataframe(gb_path, id_header)
         self.dataframe = dataframe
-        self.sequence = sequence
+        self.sequence = sequence.upper()
         self.gene_names = gene_names
         self.cds = None
         self.no_cds = None
@@ -183,6 +183,38 @@ class BacillusClausiiGB:
         combined_stats.to_csv(csv_file_path, index=True)
         print(f"Statistical reports written to: {csv_file_path}")
 
+    # Question 3 section 1
+    def print_ct_percentage(self):
+        """
+        Prints the average percentage of 'C' and 'T' nucleotides in the genome.
+        """
+        ct_percentage = calculate_ct_percentage(self.sequence)
+        print(f"The average CT percentage in the genome is {ct_percentage:.2f}%")
+
+    def add_ct_percentage_to_df(self):
+        self.dataframe['CT_percent'] = self.dataframe.apply(lambda row: calculate_ct_percentage(row['sub_sequence']), axis=1)
+        self.find_cds()
+        self.find_no_cds()
+
+    def print_cds_ct_average_percentage(self):
+        ct_average = self.cds['CT_percent'].mean()
+        print(f'The CDS average CT percent: {ct_average:.2f}%')
+
+    def plot_cds_ct_percent_histogram(self):
+        ct_percent = self.cds['CT_percent']
+        at_max = max(ct_percent)
+        x_max = at_max + 0.1 * at_max
+        y_max = 1500
+        plot_single_histograma('CDS CT Percent Histogram', ct_percent, 'CT percent', 'Count', x_max, y_max)
+
+    def print_rich_poor_ct_percent(self, amount=5):
+        rich = self.dataframe.nlargest(amount, 'CT_percent')
+        poor = self.dataframe.nsmallest(amount, 'CT_percent')
+        rich.to_csv(os.path.join(DATA_PATH, 'rich_CT_percent.csv'))
+        poor.to_csv(os.path.join(DATA_PATH, 'poor_CT_percent.csv'))
+        print(f"Most rich {amount} CT percents genes details:{rich}")
+        print(f"Most poor {amount} CT percents genes details:{poor}")
+
 if __name__ == "__main__":
     genbank = BacillusClausiiGB(BC_FILE_PATH)
 
@@ -198,6 +230,15 @@ if __name__ == "__main__":
     genbank.report_cds_stats_by_strand()
     genbank.report_no_cds_stats_by_strand()
     genbank.plot_cds_and_no_cds_length_histogram_by_strand()
+    
+    # Question 3
+    genbank.print_ct_percentage()
+    genbank.add_ct_percentage_to_df()
+    genbank.print_cds_ct_average_percentage()
+    # Need to add section 3 explanation in word doc.
+    genbank.plot_cds_ct_percent_histogram()
+    genbank.print_rich_poor_ct_percent()
+
 
     # At the end export the DataFrame holding all the information into part_A.csv file inder Data folder.
     genbank.export_dataframe_to_csv()

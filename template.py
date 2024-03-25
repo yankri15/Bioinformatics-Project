@@ -119,12 +119,9 @@ def parse_genbank_to_dataframe(gb_file_path, id_header='locus_tag'):
             for key in ['table', 'translation', 'codon_start', 'product', 'protein_id']:
                 data[key].append(None)
 
-    # Construct DataFrame object from dictionary
     df = pd.DataFrame(data)
-    # Add sub_sequence and check columns
     df['sub_sequence'] = df.apply(lambda row: genom_seq[row['start']:row['end']], axis=1)
     
-    # Assuming check_translation is a predefined function
     df['check'] = [validate_translation(row['type'], row['translation'], row['sub_sequence'], row['table'], row['strand'], row['codon_start']) for index, row in df.iterrows()]
 
     return df, genom_seq, gene_names
@@ -156,7 +153,6 @@ def validate_translation(gene_type, org_trans, seq, trans_table_id, strand, codo
         sequence = sequence.reverse_complement()
 
     try:
-        # Ensure trans_table_id is an integer
         trans_table_id = int(trans_table_id)
         trans = sequence.translate(table=trans_table_id, to_stop=True)
         if trans == org_trans:
@@ -253,3 +249,14 @@ def plot_multiple_histograma(title, lengths, x_label, y_label, color='skyblue', 
 
     return ax
 
+def calculate_ct_percentage(sequence):
+        """
+        Calculates the average percentage of 'C' and 'T' nucleotides in the bacterial genome.
+
+        Returns:
+        - float: The average percentage of 'C' and 'T' nucleotides in the genome.
+        """
+        count_c = sequence.count('C')
+        count_t = sequence.count('T')
+        
+        return ((count_c + count_t) / len(sequence)) * 100
