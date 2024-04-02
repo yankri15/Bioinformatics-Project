@@ -1,5 +1,5 @@
-Gens N dN: 0.0011, dS: 0.014, dN/dS: 0.073 Negative selection
-Gens M dN: 0.002, dS: 0.013, dN/dS: 0.151 Neutral selection
-Gens E dN: 0.0, dS: 0.083, dN/dS: 0.0 Negative selection
-Gens ORF3a dN: 0.0, dS: 0.005, dN/dS: 0.0 Negative selection
-Gens ORF7a dN: 0.0, dS: 0.029, dN/dS: 0.0 Negative selection
+Gene: N dN/dS ratio: 0.0. Selection:  Negative
+Gene: ORF3a dN/dS ratio: 0.15160257596741933. Selection:  Negative
+Gene: ORF6 dN/dS ratio: 0.0. Selection:  Negative
+Gene: ORF7b dN/dS ratio: 0.0. Selection:  Negative
+Gene: M dN/dS ratio: 0.07360495318165225. Selection:  Negative
