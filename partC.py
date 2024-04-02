@@ -1,7 +1,11 @@
-from Bio import Entrez, SeqIO, codonalign
+from Bio import Entrez, SeqIO, codonalign, Align
 import pandas as pd
 import matplotlib.pyplot as plt
+from Bio.Seq import Seq
+from Bio.Align import substitution_matrices
+
 import Bio.Data.CodonTable
+from Bio.codonalign.codonseq import CodonSeq, cal_dn_ds
 import seaborn as sns
 
 
@@ -184,4 +188,75 @@ def some_other_intersting():
     # print(feb_2024_translations_md5)
 
 
-# dnds
+def pad_seq(sequence):
+    """Pad sequence to multiple of 3 with N"""
+
+    remainder = len(sequence) % 3
+
+    return sequence if remainder == 0 else sequence + Seq("N" * (3 - remainder))
+
+
+def from_aliment_protein_translation_to_sequence(translation, seq):
+
+    str_to_return = ""
+    for cher in translation:
+
+        if cher == "-":
+
+            str_to_return += "---"
+        else:
+            str_to_return += seq[:3]
+            seq = seq[3:]
+    return str_to_return
+
+
+chosen_genes_compare = ["N", "ORF3a", "ORF6", "ORF7b", "M"]
+
+# dnd
+april_seq = []
+feb_seq = []
+april_translations = []
+feb_translations = []
+for feature in april_2021_covid_gb_record.features:
+
+    if feature.type == "CDS" and feature.qualifiers["gene"][0] in chosen_genes_compare:
+        start = feature.location.start
+        end = feature.location.end
+        april_2021_gene_seq = str(april_2021_covid_gb_record.seq[start:end])
+        april_2021_gene_translation = feature.qualifiers["translation"][0]
+        april_seq.append(april_2021_gene_seq)
+        april_translations.append(april_2021_gene_translation)
+
+for feature in feb_2024_covid_gb_record.features:
+
+    if feature.type == "CDS" and feature.qualifiers["gene"][0] in chosen_genes_compare:
+        start = feature.location.start
+        end = feature.location.end
+        feb_2024_gene_seq = str(feb_2024_covid_gb_record.seq[start:end])
+        feb_2024_gene_translation = feature.qualifiers["translation"][0]
+        feb_seq.append(feb_2024_gene_seq)
+        feb_translations.append(feb_2024_gene_translation)
+
+for i in range(len(april_seq)):
+
+    aligner = Align.PairwiseAligner()
+    aligner.substitution_matrix = substitution_matrices.load("BLOSUM62")
+    alignments = aligner.align(april_translations[i], feb_translations[i])
+
+    after_alignment_seq1 = from_aliment_protein_translation_to_sequence(
+        alignments[0][0], april_seq[i]
+    )
+    after_alignment_seq2 = from_aliment_protein_translation_to_sequence(
+        alignments[0][1], feb_seq[i]
+    )
+
+    dN, dS = cal_dn_ds(
+        CodonSeq(after_alignment_seq1),
+        CodonSeq(after_alignment_seq2),
+        codon_table=None,
+    )
+    dN_dS_ratio = float(dN / dS)
+
+    print(
+        f"Gene: {chosen_genes_compare[i]} dN/dS ratio: {dN_dS_ratio}. Selection:  {'Negative' if dN_dS_ratio < 1 else 'Positive'}"
+    )
