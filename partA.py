@@ -4,6 +4,10 @@ BC_FILE_PATH = os.path.join(DATA_PATH, 'Bacillus clausii.gb')
 
 class BacillusClausiiGB:
     def __init__(self, gb_path, id_header="locus_tag"):
+        """
+        Initializes the BacillusClausiiGB object by parsing a GenBank file into a dataframe, a sequence string, and a list of gene names.
+        It also initializes several attributes to None that will later hold specific subsets of data for analysis.
+        """
         dataframe, sequence, gene_names = parse_genbank_to_dataframe(gb_path, id_header)
         self.dataframe = dataframe
         self.sequence = sequence.upper()
@@ -39,6 +43,9 @@ class BacillusClausiiGB:
         self.no_cds = self.dataframe[self.dataframe['type'] != 'CDS']
 
     def set_all_strands(self):
+        """
+        Separates the genes into plus and minus strands and further categorizes them into coding sequences (CDS) and non-coding sequences.
+        """
         if self.cds is None:
             self.find_cds()
 
@@ -192,15 +199,25 @@ class BacillusClausiiGB:
         print(f"The average CT percentage in the genome is {ct_percentage:.2f}%")
 
     def add_ct_percentage_to_df(self):
+        """
+        Adds a new column 'CT_percent' to the dataframe, containing the percentage of 'C' and 'T' nucleotides
+        for each gene's sequence. 
+        """
         self.dataframe['CT_percent'] = self.dataframe.apply(lambda row: calculate_ct_percentage(row['sub_sequence']), axis=1)
         self.find_cds()
         self.find_no_cds()
 
     def print_cds_ct_average_percentage(self):
+        """
+        Prints the average percentage of 'C' and 'T' nucleotides within coding sequences (CDS).
+        """
         ct_average = self.cds['CT_percent'].mean()
         print(f'The CDS average CT percent: {ct_average:.2f}%')
 
     def plot_cds_ct_percent_histogram(self):
+        """
+        Plots a histogram of the 'C' and 'T' nucleotide percentages across all coding sequences (CDS).
+        """
         ct_percent = self.cds['CT_percent']
         at_max = max(ct_percent)
         x_max = at_max + 0.1 * at_max
@@ -208,6 +225,10 @@ class BacillusClausiiGB:
         plot_single_histograma('CDS CT Percent Histogram', ct_percent, 'CT percent', 'Count', x_max, y_max)
 
     def print_rich_poor_ct_percent(self, amount=5):
+        """
+        Identifies and prints the genes with the highest and lowest percentages of 'C' and 'T' nucleotides.
+        The function outputs the specified number of genes (default is 5) at both extremes and saves their data to CSV files.
+        """
         rich = self.dataframe.nlargest(amount, 'CT_percent')
         poor = self.dataframe.nsmallest(amount, 'CT_percent')
         rich.to_csv(os.path.join(DATA_PATH, 'rich_CT_percent.csv'))
@@ -235,10 +256,8 @@ if __name__ == "__main__":
     genbank.print_ct_percentage()
     genbank.add_ct_percentage_to_df()
     genbank.print_cds_ct_average_percentage()
-    # Need to add section 3 explanation in word doc.
     genbank.plot_cds_ct_percent_histogram()
     genbank.print_rich_poor_ct_percent()
-
 
     # At the end export the DataFrame holding all the information into part_A.csv file inder Data folder.
     genbank.export_dataframe_to_csv()
