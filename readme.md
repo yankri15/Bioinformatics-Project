@@ -1,4 +1,4 @@
-# Final Computational Biology פרםחקבא
+# Final Computational Biology project
 
 ## How to install
 
